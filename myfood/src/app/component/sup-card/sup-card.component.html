@@ -1,0 +1,24 @@
+<div class="border border-gainsboro p-3 mt-3 clearfix item">
+  <div class="col-lg-3 col-md-2 pl-0 col-sm-3">
+    <form id="myform" method="POST" action="#">
+      <input type="button" value="-" class="qtyminus" field="quantity" (click)="minus()">
+      <input type="text" name="quantity" readonly="" [value]="itemObj?.quantity" class="qty">
+      <input type="button" value="+" class="qtyplus" field="quantity" (click)="plus()">
+    </form>
+  </div>
+  <div class="col-lg-4 col-md-4 text-lg-left">
+    <h3 class="h6 mb-0 text-left">{{ itemObj.name }}<br>
+    </h3>
+    <span class="list-group-item-text" *ngFor="let item of itemObj.options">
+      {{ item.suboptions[0].name }},
+    </span>
+  </div>
+  <div class="col-lg-2 col-md-2 col-sm-2 product-line-price pt-2">
+    <a *ngIf="itemObj.options.length > 0" (click)="editAddOn()" type="button" class="product-line-price w-100"
+      class="btn" data-toggle="modal" data-target="#webmodal1"><i class="fa fa-edit"></i>
+    </a>
+  </div>
+  <div class="col-lg-2 col-md-2 col-sm-2">
+    <small class="text-green text-bold">{{ calcTotalprice(itemObj) }}</small>
+  </div>
+</div>

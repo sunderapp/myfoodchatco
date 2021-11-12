@@ -1,0 +1,56 @@
+<button mat-dialog-close type="button" class="close" data-dismiss="modal" aria-label="Close">
+  <span aria-hidden="true">&times;</span>
+</button>
+<div class="container">
+  <div class="head">
+    <h1 style="color: white;">order number</h1>
+    <h1 style="color: white;">#{{ data.order?.result?.id }}</h1>
+  </div>
+  <div class="row orderpara">
+    <div class="col-md-12 col-sm-12">
+      <h2 class="text-center">Your Order</h2>
+      <h3 *ngFor="let item of data.order?.result?.products"><span class="text-left">{{ item.quantity }} * {{ item.name
+          }}
+        </span> <span class="text-right pull-right">{{ item.quantity * item.price | currency}}</span></h3>
+
+
+      <h3><span class="text-left">Subtotal</span> <span class="text-right pull-right">{{ subtotal | currency }}</span>
+      </h3>
+      <span>
+        <h3><span class="text-left">Estimated Tax</span> <span class="text-right pull-right">{{ service_fee | currency
+            }}</span></h3>
+        <h3><span class="text-left">Service Fee</span><span class="text-right pull-right">{{ service_fee | currency
+            }}</span></h3>
+      </span>
+      <span>
+        <h3><span class="text-left text-bold">Total</span><span class="text-right pull-right text-bold">{{ total |
+            currency }}</span>
+        </h3>
+      </span>
+    </div>
+  </div>
+  <!------------end of row---------->
+  <!-- <div class="row">
+    <div class="col-md-6 col-sm-12">
+      <h3>From</h3>
+      <p>McBonalds<br>
+        300 5th Avenue, New York, NY, USA</p>
+      <p>123123 123123123<br>
+        test@ordering.co.in</p>
+
+
+    </div>
+    <div class="col-md-6 col-sm-12">
+      <h3>To</h3>
+      <p>Maruti Varman<br>
+        300 5th Avenue, New York, NY, USA</p>
+      <p class="custom-text">40-a mahalchowpaty beach, Mumbai 400234</p>
+      <p>9645834585<br>
+        maruthi@gmail.com</p>
+    </div>
+  </div> -->
+  <div class="text-center mt-3">
+    <h3>Payment Method:{{ data.order?.result?.paymethod.name }}</h3>
+
+  </div>
+</div>

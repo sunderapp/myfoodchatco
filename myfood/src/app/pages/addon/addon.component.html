@@ -1,0 +1,44 @@
+<div class="modal-header">
+  <h5 class="modal-title" mat-dialog-title>Yogurt Go-Gurt Strawberry Yogurt</h5>
+  <button mat-dialog-close type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<mat-dialog-content class="mat-typography">
+  <div class="modal-body">
+    <form class="text-left">
+      <div class="text-left"><img class="img-responsive w-10 mx-auto" [src]="data.cartItem.images"></div>
+
+      <div class="radiobox" *ngFor="let mainOption of data.cartItem.option">
+        <h5 class="text-left">{{ mainOption.name }} (Choose One)</h5>
+        <div class="row">
+          <div class="col-md-4" *ngFor="let option of mainOption.options[0].suboptions, let i = index ">
+            <div class="row">
+              <div class="col-4 changed p-0">
+                <input type="radio" class="float-right form-check-input position-static"
+                  name="{{option.extra_option_id}}" [value]='option' [(ngModel)]="option[i]"
+                  (ngModelChange)='changeEventInRadioButton($event)'>
+              </div>
+              <div class="col-8 p-2">
+                <div class="float-left">
+                  <span class="inputdisplay">{{ option.name }}</span>
+                  <br>
+                  <span class="inputdisplay1">+{{ option.price | currency }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </form>
+  </div>
+</mat-dialog-content>
+
+
+<mat-dialog-actions align="end">
+  <button (click)="onClickAdd()" type="button" class="btn btn-primary">
+    Add
+  </button>
+</mat-dialog-actions>

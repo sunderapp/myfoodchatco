@@ -1,0 +1,453 @@
+<mat-drawer-container class="example-container">
+  <mat-drawer #drawer mode="over" position="end" class="example-sidenav">
+
+    <button type="button" class="float-left m-3 close" (click)="drawer.toggle()">
+      <span aria-hidden="true">×</span>
+    </button>
+
+    <div class="text-center">
+      <select name="cars" id="cars" class="mt-5">
+        <option value="volvo">Eatin</option>
+        <option value="saab">Pick up</option>
+        <option value="mercedes">Eatin</option>
+        <option value="audi">Curb Side</option>
+      </select>
+
+
+
+      <h3 class="text-green text-center pt-3">Your Order</h3>
+      <div *ngIf="this.cartItem.length > 0; else noOrder">
+        <div class="container mb-5">
+          <div class="row justify-content-center">
+            <div class="col-xl-12 col-lg-12 col-md-12 heightmain">
+				<div class="heightsubmain">
+              <app-sup-card *ngFor="let item of cartItem" [itemObj]="item" (plus_e)="plusForCart($event)"
+                (minus_e)="minusForCart($event)" (new_e)="newAdd($event)" (editAddOn_e)="openDialogFromCard($event)">
+              </app-sup-card>
+				</div>
+            </div>
+            <div class="col-xl-12 col-lg-12 col-md-12 totals">
+              <div class="border border-gainsboro px-3">
+                <div class="border-bottom border-gainsboro">
+                  <p class="text-uppercase mb-0 py-3"><strong>Order Summary</strong></p>
+                </div>
+                <div class="totals-item d-flex align-items-center justify-content-between mt-3">
+                  <p class="text-uppercase text-left">Subtotal</p>
+                  <p class="totals-value text-right" id="cart-subtotal">{{ subtotal | currency }}</p>
+                </div>
+                <div class="totals-item d-flex align-items-center justify-content-between">
+                  <p class="text-uppercase text-left">Service Fee</p>
+                  <p class="totals-value text-right" id="cart-tax">{{ service_fee | currency }}</p>
+                </div>
+                <div class="totals-item d-flex align-items-center justify-content-between">
+                  <p class="text-uppercase text-left">Estimated Tax</p>
+                  <p class="totals-value text-right" id="cart-tax">{{ estimatedTax | currency }}</p>
+                </div>
+                <div
+                  class="totals-item totals-item-total d-flex align-items-center justify-content-between mt-3 pt-3 border-top border-gainsboro">
+                  <p class="text-uppercase text-left"><strong>Total</strong></p>
+                  <p class="totals-value text-right font-weight-bold cart-total">{{ total | currency }}</p>
+                </div>
+              </div>
+              <a href="#" class="mt-3 btn btn-pay w-100 d-flex justify-content-between btn-lg rounded-0"
+                data-toggle="modal" data-target="#checkoutmodal" (click)="actionShowPayment()">Checkout <span
+                  class="totals-value  text-right cart-total">{{ total | currency }}</span></a>
+
+            </div>
+
+            <form class="pt-4 text-center" *ngIf="showPayment" [formGroup]="registerForm" (ngSubmit)="onSubmitForm()">
+              <div class="form-group">
+                <input type="text" formControlName="tableNo" class="form-control"
+                  [ngClass]="{ 'is-invalid': submitted && f.tableNo.errors }" placeholder="Enter Table Number">
+                <div *ngIf="submitted && f.tableNo.errors" class="invalid-feedback">
+                  <div *ngIf="f.tableNo.errors.required">Table Number is required</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="text" formControlName="name" class="form-control" placeholder="Enter your name">
+              </div>
+              <div class="form-group">
+                <input type="number" formControlName="phoneNo"
+                  [ngClass]="{ 'is-invalid': submitted && f.phoneNo.errors }" class="form-control"
+                  placeholder="Enter Phone Number ">
+                <div *ngIf="submitted && f.phoneNo.errors" class="invalid-feedback">
+                  <div *ngIf="f.phoneNo.errors.required">Phone Number is required</div>
+                </div>
+              </div>
+
+
+              <div class="form-group">
+                <label for="exampleFormControlSelect1">Payment type</label>
+                <select class="form-control" formControlName="paymentType"
+                  [ngClass]="{ 'is-invalid': submitted && f.paymentType.errors }">
+                  <option value="1" selected>Cash Payment</option>
+                  <option value="28">Stripe Payment</option>
+                </select>
+                <div *ngIf="submitted && f.paymentType.errors" class="invalid-feedback">
+                  <div *ngIf="f.paymentType.errors.required">Payment type is required</div>
+                </div>
+              </div>
+
+              <div class="payment-card" *ngIf="f.paymentType.value == 28">
+
+                <div class="form-group">
+                  <input type="number" formControlName="card_number"
+                    [ngClass]="{ 'is-invalid': submitted && f.card_number.errors }" class="form-control"
+                    placeholder="Enter Card Number ">
+                  <div *ngIf="submitted && f.card_number.errors" class="invalid-feedback">
+                    <div *ngIf="f.card_number.errors.required">Card Number is required</div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <input type="number" formControlName="exp_month"
+                    [ngClass]="{ 'is-invalid': submitted && f.exp_month.errors }" class="form-control"
+                    placeholder="Enter Month">
+                  <div *ngIf="submitted && f.exp_month.errors" class="invalid-feedback">
+                    <div *ngIf="f.exp_month.errors.required">Month is required</div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <input type="number" formControlName="exp_year"
+                    [ngClass]="{ 'is-invalid': submitted && f.exp_year.errors }" class="form-control"
+                    placeholder="Enter Year">
+                  <div *ngIf="submitted && f.exp_year.errors" class="invalid-feedback">
+                    <div *ngIf="f.exp_year.errors.required">Year is required</div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <input type="number" formControlName="cvc" [ngClass]="{ 'is-invalid': submitted && f.cvc.errors }"
+                    class="form-control" placeholder="Enter CVC Number ">
+                  <div *ngIf="submitted && f.cvc.errors" class="invalid-feedback">
+                    <div *ngIf="f.cvc.errors.required">CVC Number is required</div>
+                  </div>
+                </div>
+
+
+              </div>
+
+              <div class="form-group">
+                <button type="submit"
+                  class="mt-3 btn btn-pay w-100 d-flex justify-content-between btn-lg rounded-0">Place Your
+                  Order</button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+      <!-- else Div -->
+      <ng-template #noOrder>
+        <div class="img-noorder">
+          <img src="../assets/images/main/Cart_empty.png" style="width: 70%;">
+        </div>
+      </ng-template>
+    </div>
+
+
+
+  </mat-drawer>
+  <mat-drawer-content>
+
+    <body data-spy="scroll" data-target=".navbar" data-offset="50">
+      <div class="container-fluid p-0 m-0">
+        <div class="row">
+          <div class="mainsection col-md-8 col-sm-12">
+
+            <div class="loader" *ngIf="contentLoaded">
+              <ngx-skeleton-loader count="1" [theme]="{ 'border-radius': '0', height: '250px' }"></ngx-skeleton-loader>
+              <ngx-skeleton-loader count="1"
+                [theme]="{ 'border-radius': '0', width: '300px', height: '30px', margin: '40px' }">
+              </ngx-skeleton-loader>
+              <br>
+              <br>
+              <div class="row" *ngFor="let item of loaderData">
+                <div class="col-2 d-flex justify-content-end">
+                  <ngx-skeleton-loader appearance="circle" [theme]="{
+                    width: '100px',
+                    height: '100px',
+                    'border-radius': '10px'
+                  }">
+                  </ngx-skeleton-loader>
+
+                </div>
+                <div class="col-10 d-flex justify-content-start">
+                  <div>
+                    <ngx-skeleton-loader count="1" [theme]="{ width: '300px' }"></ngx-skeleton-loader>
+                    <br>
+                    <ngx-skeleton-loader count="1" [theme]="{ width : '500px' }"></ngx-skeleton-loader>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="header" *ngIf="!contentLoaded"></div>
+
+            <section class="bg-menu bg-section main" id="menu" *ngIf="!contentLoaded">
+
+              <div class="container menucontent">
+                <h3 class="shop-name d-flex pt-5 pb-5">
+                  {{ businessData?.name }}
+                  <i class="fa fa-info-circle btn-more-info pl-3 pr-3" aria-hidden="true"
+                    data-ng-click="moreInfo()"></i>
+                </h3>
+              </div>
+
+              <div class="row">
+
+                <div class="sub-header mb-4 ">
+
+                  <div class="overflow mb-4">
+                    <div class="overflow-item nav-pills">
+                      <li class="nav-item" style="display: inline;" *ngFor="let categorie of categories">
+                        <a class="nav-link" style="display: inline;" [routerLink]="'./section' + categorie.id"
+                          [ngClass]="currentSection === 'section' + categorie.id ? 'active' : ''"
+                          (click)="scrollTo('section' + categorie.id)">{{ categorie.name }}</a>
+                      </li>
+                    </div>
+                  </div>
+
+                  <div class="input-group">
+                    <input placeholder="What're you searching for?" type="text" [(ngModel)]="searchedKeyword"
+                      class="form-control border-0 bg-light" />
+                    <div class="input-group-append">
+                      <button id="button-addon1" type="submit" class="btn btn-link text-primary">
+                        <i class="fa fa-search"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+
+                <div class="tab-content slideanim content slide">
+                  <div id="breakfast" class="tab-pane fade show active">
+                    <div class="row p-0">
+                      <div class="col-lg-12 col-md-12 col-sm-12 p-0">
+
+                        <div id="parentDiv" scrollSpy [spiedTags]="['DIV']" (sectionChange)="onSectionChange($event)">
+                          <div *ngFor="let food of foodsList" [id]="'section' + food.id">
+                            <ul class="list-group">
+                              <h4 class="text-align pl-4">{{ food.name }}</h4>
+                              <app-card *ngFor="let item of food.products | filter: searchedKeyword" [itemObj]="item"
+                                (itemCountObj)="itemCountEvent($event)" (plus_e)="plus($event)"
+                                (minus_e)="minus($event)" (new_e)="newAdd($event)">
+                              </app-card>
+                            </ul>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <div class="aside col-md-4 col-sm-12 text-center sticker webview">
+            <select name="cars" id="cars" class="mt-5">
+              <option value="volvo">Eatin</option>
+              <option value="saab">Pick up</option>
+              <option value="mercedes">Eatin</option>
+              <option value="audi">Curb Side</option>
+            </select>
+
+    
+
+            <h3 class="text-green text-center pt-3">Your Order</h3>
+            <div *ngIf="this.cartItem.length > 0; else noOrder">
+              <div class="container mb-5">
+                <div class="row justify-content-center">
+                  <div class="col-xl-12 col-lg-12 col-md-12 heightmain">
+					<div class="heightsubmain">
+                    <app-sup-card *ngFor="let item of cartItem" [itemObj]="item" (plus_e)="plusForCart($event)"
+                      (minus_e)="minusForCart($event)" (new_e)="newAdd($event)"
+                      (editAddOn_e)="openDialogFromCard($event)">
+                    </app-sup-card>
+					</div>
+                  </div>
+                  <div class="col-xl-12 col-lg-12 col-md-12 totals">
+                    <div class="border border-gainsboro px-3">
+                      <div class="border-bottom border-gainsboro">
+                        <p class="text-uppercase mb-0 py-3"><strong>Order Summary</strong></p>
+                      </div>
+                      <div class="totals-item d-flex align-items-center justify-content-between mt-3">
+                        <p class="text-uppercase text-left">Subtotal</p>
+                        <p class="totals-value text-right" id="cart-subtotal">{{ subtotal | currency }}</p>
+                      </div>
+                      <div class="totals-item d-flex align-items-center justify-content-between">
+                        <p class="text-uppercase text-left">Service Fee</p>
+                        <p class="totals-value text-right" id="cart-tax">{{ service_fee | currency }}</p>
+                      </div>
+                      <div class="totals-item d-flex align-items-center justify-content-between">
+                        <p class="text-uppercase text-left">Estimated Tax</p>
+                        <p class="totals-value text-right" id="cart-tax">{{ estimatedTax | currency }}</p>
+                      </div>
+                      <div
+                        class="totals-item totals-item-total d-flex align-items-center justify-content-between mt-3 pt-3 border-top border-gainsboro">
+                        <p class="text-uppercase text-left"><strong>Total</strong></p>
+                        <p class="totals-value text-right font-weight-bold cart-total">{{ total | currency }}</p>
+                      </div>
+                    </div>
+                    <a href="#" class="mt-3 btn btn-pay w-100 d-flex justify-content-between btn-lg rounded-0"
+                      data-toggle="modal" data-target="#checkoutmodal" (click)="actionShowPayment()">Checkout <span
+                        class="totals-value  text-right cart-total">{{ total | currency }}</span></a>
+
+                  </div>
+
+                  <form class="pt-4 text-center" *ngIf="showPayment" [formGroup]="registerForm"
+                    (ngSubmit)="onSubmitForm()">
+                    <div class="form-group">
+                      <input type="text" formControlName="tableNo" class="form-control"
+                        [ngClass]="{ 'is-invalid': submitted && f.tableNo.errors }" placeholder="Enter Table Number">
+                      <div *ngIf="submitted && f.tableNo.errors" class="invalid-feedback">
+                        <div *ngIf="f.tableNo.errors.required">Table Number is required</div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <input type="text" formControlName="name" class="form-control" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                      <input type="number" formControlName="phoneNo"
+                        [ngClass]="{ 'is-invalid': submitted && f.phoneNo.errors }" class="form-control"
+                        placeholder="Enter Phone Number ">
+                      <div *ngIf="submitted && f.phoneNo.errors" class="invalid-feedback">
+                        <div *ngIf="f.phoneNo.errors.required">Phone Number is required</div>
+                      </div>
+                    </div>
+
+
+                    <div class="form-group">
+                      <label for="exampleFormControlSelect1">Payment type</label>
+                      <select (change)="setValidationForCard()" class="form-control" formControlName="paymentType"
+                        [ngClass]="{ 'is-invalid': submitted && f.paymentType.errors }">
+                        <option value="1">Cash Payment</option>
+                        <option value="28">Stripe Payment</option>
+                      </select>
+                      <div *ngIf="submitted && f.paymentType.errors" class="invalid-feedback">
+                        <div *ngIf="f.paymentType.errors.required">Payment type is required</div>
+                      </div>
+                    </div>
+
+                    <div class="payment-card" *ngIf="f.paymentType.value == 28">
+
+                      <div class="input-group">
+                        <input type="number" class="form-control" formControlName="card_number"
+                          [ngClass]="{ 'is-invalid': submitted && f.card_number.errors }" placeholder="Enter card no">
+                        <div class="input-group-append">
+                          <span class="input-group-text text-muted">
+                            <i class="fa fa-cc-visa"></i> &nbsp; <i class="fa fa-cc-amex"></i> &nbsp;
+                            <i class="fa fa-cc-mastercard"></i>
+                          </span>
+                        </div>
+                        <div *ngIf="submitted && f.card_number.errors" class="invalid-feedback">
+                          <div *ngIf="f.card_number.errors.required">Card Number is required</div>
+                        </div>
+                      </div>
+
+                      <div class="row pt-3">
+                        <div class="col-sm-8">
+                          <div class="form-group">
+                            <label><span class="hidden-xs">Expiration</span> </label>
+                            <div class="input-group">
+                              <input type="number" class="form-control" placeholder="MM" formControlName="exp_month">
+                              <input type="number" class="form-control" placeholder="YY" formControlName="exp_year">
+                            </div>
+                            <div *ngIf="submitted && f.exp_month.errors" class="invalid-feedback">
+                              <div *ngIf="f.exp_month.errors.required">Month is required</div>
+                            </div>
+                            <div *ngIf="submitted && f.exp_year.errors" class="invalid-feedback">
+                              <div *ngIf="f.exp_year.errors.required">Year is required</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-sm-4">
+                          <div class="form-group">
+                            <label data-toggle="tooltip" title=""
+                              data-original-title="3 digits code on back side of the card">CVV <i
+                                class="fa fa-question-circle"></i></label>
+                            <input type="number" formControlName="cvc" class="form-control">
+                            <div *ngIf="submitted && f.cvc.errors" class="invalid-feedback">
+                              <div *ngIf="f.cvc.errors.required">CVC Number is required</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+
+                      <!-- <div class="form-group">
+                        <input type="number" formControlName="card_number"
+                          [ngClass]="{ 'is-invalid': submitted && f.card_number.errors }" class="form-control"
+                          placeholder="Enter Card Number ">
+                        <div *ngIf="submitted && f.card_number.errors" class="invalid-feedback">
+                          <div *ngIf="f.card_number.errors.required">Card Number is required</div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <input type="number" formControlName="exp_month"
+                          [ngClass]="{ 'is-invalid': submitted && f.exp_month.errors }" class="form-control"
+                          placeholder="Enter Month">
+                        <div *ngIf="submitted && f.exp_month.errors" class="invalid-feedback">
+                          <div *ngIf="f.exp_month.errors.required">Month is required</div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <input type="number" formControlName="exp_year"
+                          [ngClass]="{ 'is-invalid': submitted && f.exp_year.errors }" class="form-control"
+                          placeholder="Enter Year">
+                        <div *ngIf="submitted && f.exp_year.errors" class="invalid-feedback">
+                          <div *ngIf="f.exp_year.errors.required">Year is required</div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <input type="number" formControlName="cvc"
+                          [ngClass]="{ 'is-invalid': submitted && f.cvc.errors }" class="form-control"
+                          placeholder="Enter CVC Number ">
+                        <div *ngIf="submitted && f.cvc.errors" class="invalid-feedback">
+                          <div *ngIf="f.cvc.errors.required">CVC Number is required</div>
+                        </div>
+                      </div> -->
+
+
+                    </div>
+
+                    <div class="form-group">
+                      <button type="submit"
+                        class="mt-3 btn btn-pay w-100 d-flex justify-content-between btn-lg rounded-0">Place Your
+                        Order</button>
+                    </div>
+                  </form>
+
+                </div>
+              </div>
+            </div>
+            <!-- else Div -->
+            <ng-template #noOrder>
+              <div class="img-noorder">
+                <img src="../assets/images/main/Cart_empty.png" style="width: 70%;">
+              </div>
+            </ng-template>
+          </div>
+
+        </div>
+      </div>
+    </body>
+
+    <!-- View card button mob -->
+    <div class="mycartbar mobview text-center mx-auto">
+      <button (click)="drawer.toggle()" type="button" class="btn btn-primary mobview" data-toggle="modal"
+        data-target="#example">
+        View My Cart<i class="fa fa-cart-plus" style="font-size:30px; color:#fff; padding-left:10px;"></i>
+      </button>
+    </div>
+
+  </mat-drawer-content>
+</mat-drawer-container>

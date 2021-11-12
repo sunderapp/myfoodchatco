@@ -1,0 +1,15 @@
+<div class="msg">
+
+
+  <div class="flex-row" style="gap:20px">
+
+    <!-- <mat-icon *ngIf="data.action ==='Success'" class="done">done</mat-icon>
+    <mat-icon *ngIf="data.action !=='Success'" class="close">close</mat-icon> -->
+
+    <div class="text" [ngClass]="data.action ==='Success' ? 'done' : 'red'">
+      {{data.message}}
+    </div>
+
+  </div>
+
+</div>
